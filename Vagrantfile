@@ -81,16 +81,14 @@ Vagrant.configure(2) do |config|
 
   config.vm.define "frontend", autostart: false do |frontend|
     frontend.vm.provider "docker" do |docker|
-      docker.build_dir = "deployments/frontend"
-#      docker.vagrant_machine = "dockerhost"
+      docker.build_dir = "deployments/frontend/"
       docker.name = "frontend"
     end
   end
 
   config.vm.define "database", autostart: false do |database|
     database.vm.provider "docker" do |docker| 
-      docker.build_dir = "deployments/database"
-#      docker.vagrant_machine = "dockerhost"
+      docker.build_dir = "deployments/database/"
       docker.name = "database"
     end
   end

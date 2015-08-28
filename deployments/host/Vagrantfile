@@ -11,6 +11,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Assign a friendly name to this host VM
   config.vm.hostname = "dockerhost"
 
+  config.vm.network "private_network", ip: "192.168.50.250"
+
+#  config.vm.provision "shell", inline:
+#    "yum -y install bzip2"
+
   # Skip checking for an updated Vagrant box
   config.vm.box_check_update = false
 
@@ -19,20 +24,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Spin up a "host box" for use with the Docker provider
   # and then provision it with Docker
-#  config.vm.box = "centos/7"
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "centos/7"
+#  config.vm.box = "ubuntu/trusty64"
   config.vm.provision "docker"
 
   # Disable synced folders (prevents an NFS error on "vagrant up")
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
-  config.vm.provision "shell", inline:
-    "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+#  config.vm.provision "shell", inline:
+#    "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
 
-  config.vm.provision "shell", inline:
-    "yum -y install bzip2"
+#  config.vm.network "forwarded_port",
+#    guest: 8080, host: 8080
 
-  config.vm.network "forwarded_port",
-    guest: 8080, host: 8080
+  config.vm.provision "shell", inline: <<-SCRIPT
+    # tweak docker config
+    echo 'DOCKER_NETWORK_OPTIONS="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375"' >/etc/sysconfig/docker-network
+    systemctl restart docker
+  SCRIPT
+
+  config.vm.network "forwarded_port", guest: 2375, host: 2375
 
 end
