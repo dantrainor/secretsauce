@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+ENV['FOO'] = 'BAR' 
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure(2) do |config|
+  config.vm.define "dockerhost" do |dockerhost|
+    dockerhost.vm.provider "docker" do |d|
+      d.build_dir = "provisions/host/"
+      d.vagrant_vagrantfile = "provisions/host/Vagrantfile"
+      config.vm.provision "shell", inline:
+        "yum -y install bzip2"
+    end
+
+    dockerhost.vm.provision "shell", inline: "echo Hello World"
+#    dockerhost.vm.synced_folder "./keys", "/vagrant"
+  end
+end
